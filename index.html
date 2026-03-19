@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>SMART GENIE</title>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+
+body{
+font-family:"Segoe UI",sans-serif;
+margin:0;
+display:flex;
+height:100vh;
+overflow:hidden;
+background:#1e1e1e;
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar{
+width:260px;
+background:#171717;
+color:white;
+padding:10px;
+overflow-y:auto;
+border-right:1px solid #333;
+}
+
+.newchat{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+cursor:pointer;
+background:#2f2f2f;
+border:none;
+color:white;
+border-radius:6px;
+}
+
+.chat-item{
+display:flex;
+justify-content:space-between;
+padding:8px;
+cursor:pointer;
+position:relative;
+border-radius:5px;
+}
+
+.chat-item:hover{
+background:#2a2a2a;
+}
+
+.menu{cursor:pointer;}
+
+.dropdown{
+display:none;
+position:absolute;
+right:10px;
+top:25px;
+background:white;
+color:black;
+border-radius:5px;
+}
+
+.dropdown div{
+padding:5px;
+cursor:pointer;
+}
+
+/* ---------- MAIN ---------- */
+
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+position:relative;
+}
+
+/* ---------- CHAT ---------- */
+
+#chatbox{
+flex:1;
+overflow-y:auto;
+padding:20px;
+padding-bottom:120px;
+scroll-behavior:smooth;
+}
+
+.user,.bot{
+margin:12px;
+display:flex;
+}
+
+.user{justify-content:flex-end;}
+.bot{justify-content:flex-start;}
+
+.msg{
+padding:12px;
+border-radius:12px;
+max-width:65%;
+line-height:1.5;
+}
+
+.user .msg{
+background:#007bff;
+color:white;
+}
+
+.bot .msg{
+background:#2d2d2d;
+color:white;
+}
+
+/* ---------- COPY BUTTON ---------- */
+
+.copy-btn{
+font-size:12px;
+margin-top:5px;
+cursor:pointer;
+opacity:0.6;
+}
+
+.copy-btn:hover{
+opacity:1;
+}
+
+/* ---------- TYPING ---------- */
+
+.typing{
+font-style:italic;
+opacity:0.6;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:0.3;}
+50%{opacity:1;}
+100%{opacity:0.3;}
+}
+
+/* ---------- INPUT ---------- */
+
+.input-wrapper{
+position:absolute;   /* 🔥 FIXED */
+left:0;
+width:100%;
+display:flex;
+justify-content:center; /* 🔥 CENTER PERFECT */
+z-index:10;
+transition:0.3s;
+}
+
+.center{
+top:50%;
+transform:translateY(-50%);
+}
+
+.bottom{
+bottom:20px;
+}
+
+.chat-input{
+display:flex;
+background:#2a2a2a;
+border-radius:30px;
+padding:12px;
+width:60%; /* 🔥 keeps same width */
+}
+
+#message{
+flex:1;
+border:none;
+background:transparent;
+color:white;
+outline:none;
+font-size:15px;
+}
+
+.send-btn{
+background:#10a37f;
+border:none;
+border-radius:50%;
+width:40px;
+height:40px;
+cursor:pointer;
+color:white;
+font-size:16px;
+}
+
+/* ---------- EMPTY STATE ---------- */
+
+.welcome{
+text-align:center;
+margin-top:20%;
+opacity:0.7;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h3>Your Chats</h3>
+
+<button class="newchat" onclick="newChat()">+ New Chat</button>
+
+<div id="chatList"></div>
+
+</div>
+
+<div class="main">
+
+<div id="chatbox"></div>
+
+<div id="inputArea" class="input-wrapper center">
+
+<div class="chat-input">
+<input id="message" placeholder="Ask anything...">
+<button class="send-btn" onclick="sendMessage()">➤</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let currentChat=null
+
+function scrollBottom(){
+chatbox.scrollTop=chatbox.scrollHeight
+}
+
+function setCenter(){
+inputArea.className="input-wrapper center"
+}
+
+function setBottom(){
+inputArea.className="input-wrapper bottom"
+}
+
+function showWelcome(){
+chatbox.innerHTML=`<div class="welcome">
+<h2>✨ Smart Genie</h2>
+<p>Ask anything and explore AI</p>
+</div>`
+setCenter()
+}
+
+/* ---------- CHAT MANAGEMENT ---------- */
+
+function newChat(){
+fetch("/new_chat",{method:"POST"})
+.then(r=>r.json())
+.then(d=>{
+currentChat=d.chat_id
+showWelcome()
+loadChats()
+})
+}
+
+function loadChats(){
+fetch("/get_chats")
+.then(r=>r.json())
+.then(data=>{
+chatList.innerHTML=""
+data.forEach(c=>{
+chatList.innerHTML+=`
+<div class="chat-item">
+<span onclick="loadChat(${c.id})">${c.title}</span>
+<span class="menu" onclick="toggleMenu(${c.id})">⋮</span>
+<div class="dropdown" id="menu${c.id}">
+<div onclick="deleteChat(${c.id})">Delete</div>
+</div>
+</div>`
+})
+})
+}
+
+function toggleMenu(id){
+let m=document.getElementById("menu"+id)
+m.style.display = m.style.display==="block"?"none":"block"
+}
+
+function deleteChat(id){
+if(!confirm("Delete this chat?")) return
+
+fetch("/delete_chat/"+id,{method:"POST"})
+.then(()=>{
+loadChats()
+showWelcome()
+})
+}
+
+/* ---------- LOAD CHAT ---------- */
+
+function loadChat(id){
+currentChat=id
+
+fetch("/load_chat/"+id)
+.then(r=>r.json())
+.then(data=>{
+chatbox.innerHTML=""
+
+if(data.length===0){
+setCenter()
+}else{
+setBottom()
+}
+
+data.forEach(m=>{
+if(m.role==="user"){
+addUserMessage(m.message)
+}else{
+addBotMessage(m.message)
+}
+})
+
+scrollBottom()
+})
+}
+
+/* ---------- MESSAGE UI ---------- */
+
+function addUserMessage(msg){
+chatbox.innerHTML+=`
+<div class="user">
+<div class="msg">${msg}</div>
+</div>`
+}
+
+function addBotMessage(msg){
+chatbox.innerHTML+=`
+<div class="bot">
+<div>
+<div class="msg">${marked.parse(msg)}</div>
+<div class="copy-btn" onclick="copyText(\`${msg}\`)">⧉ Copy</div>
+</div>
+</div>`
+}
+
+/* ---------- COPY ---------- */
+
+function copyText(text){
+navigator.clipboard.writeText(text)
+alert("Copied!")
+}
+
+/* ---------- SEND ---------- */
+
+function sendMessage(){
+
+let msg=message.value.trim()
+if(!msg || !currentChat) return
+
+setBottom()
+
+addUserMessage(msg)
+message.value=""
+
+let typingDiv=document.createElement("div")
+typingDiv.className="bot"
+typingDiv.innerHTML=`<div class="msg typing">🤖 Thinking...</div>`
+chatbox.appendChild(typingDiv)
+
+scrollBottom()
+
+fetch("/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:msg,chat_id:currentChat})
+})
+.then(r=>r.json())
+.then(d=>{
+
+typingDiv.remove()
+
+addBotMessage(d.reply)
+
+scrollBottom()
+loadChats()
+
+})
+}
+
+/* ---------- ENTER ---------- */
+
+message.addEventListener("keydown",e=>{
+if(e.key==="Enter" && !e.shiftKey){
+e.preventDefault()
+sendMessage()
+}
+})
+
+/* ---------- INIT ---------- */
+
+loadChats()
+newChat()
+
+</script>
+
+</body>
+
+</html>
