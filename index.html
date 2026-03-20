@@ -4,6 +4,8 @@
 <head>
 <title>SMART GENIE</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <style>
@@ -26,46 +28,38 @@ color:white;
 padding:10px;
 overflow-y:auto;
 border-right:1px solid #333;
+transition:0.3s;
 }
 
-.newchat{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-cursor:pointer;
-background:#2f2f2f;
-border:none;
-color:white;
-border-radius:6px;
+/* 🔥 MOBILE FIX */
+@media (max-width:768px){
+.sidebar{
+position:fixed;
+left:-260px;
+top:0;
+height:100%;
+z-index:20;
+}
+.sidebar.active{
+left:0;
+}
+.chat-input{
+width:90%;
+}
 }
 
-.chat-item{
-display:flex;
-justify-content:space-between;
-padding:8px;
-cursor:pointer;
-position:relative;
-border-radius:5px;
-}
+/* ---------- MENU BUTTON ---------- */
 
-.chat-item:hover{
+.menu-btn{
+position:fixed;
+top:10px;
+left:10px;
+z-index:30;
 background:#2a2a2a;
-}
-
-.menu{cursor:pointer;}
-
-.dropdown{
-display:none;
-position:absolute;
-right:10px;
-top:25px;
-background:white;
-color:black;
+color:white;
+border:none;
+padding:8px;
 border-radius:5px;
-}
-
-.dropdown div{
-padding:5px;
 cursor:pointer;
 }
 
@@ -76,6 +70,7 @@ flex:1;
 display:flex;
 flex-direction:column;
 position:relative;
+width:100%;
 }
 
 /* ---------- CHAT ---------- */
@@ -126,21 +121,8 @@ opacity:0.6;
 opacity:1;
 }
 
-/* ---------- TYPING ---------- */
+/* ---------- LOADER ---------- */
 
-.typing{
-font-style:italic;
-opacity:0.6;
-animation:blink 1s infinite;
-}
-
-@keyframes blink{
-0%{opacity:0.3;}
-50%{opacity:1;}
-100%{opacity:0.3;}
-}
-
-/* 🔥 NEW LOADER */
 .loader{
 border:3px solid #444;
 border-top:3px solid #fff;
@@ -204,7 +186,7 @@ color:white;
 font-size:16px;
 }
 
-/* ---------- EMPTY STATE ---------- */
+/* ---------- EMPTY ---------- */
 
 .welcome{
 text-align:center;
@@ -217,14 +199,13 @@ opacity:0.7;
 
 <body>
 
+<!-- 🔥 MENU BUTTON -->
+<button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
 <div class="sidebar">
-
 <h3>Your Chats</h3>
-
 <button class="newchat" onclick="newChat()">+ New Chat</button>
-
 <div id="chatList"></div>
-
 </div>
 
 <div class="main">
@@ -232,19 +213,22 @@ opacity:0.7;
 <div id="chatbox"></div>
 
 <div id="inputArea" class="input-wrapper center">
-
 <div class="chat-input">
 <input id="message" placeholder="Ask anything...">
 <button class="send-btn" onclick="sendMessage()">➤</button>
 </div>
-
 </div>
 
 </div>
 
 <script>
 
-/* 🔥 ---------- SESSION ID FIX ---------- */
+/* ---------- SIDEBAR TOGGLE ---------- */
+function toggleSidebar(){
+document.querySelector(".sidebar").classList.toggle("active")
+}
+
+/* ---------- SESSION ---------- */
 function getSessionId(){
 let id = localStorage.getItem("session_id")
 if(!id){
@@ -255,7 +239,6 @@ return id
 }
 
 let sessionId = getSessionId()
-
 let currentChat=null
 
 function scrollBottom(){
@@ -278,7 +261,7 @@ chatbox.innerHTML=`<div class="welcome">
 setCenter()
 }
 
-/* ---------- CHAT MANAGEMENT ---------- */
+/* ---------- CHAT ---------- */
 
 function newChat(){
 fetch("/new_chat",{
@@ -331,8 +314,6 @@ showWelcome()
 })
 }
 
-/* ---------- LOAD CHAT ---------- */
-
 function loadChat(id){
 currentChat=id
 
@@ -347,6 +328,11 @@ setCenter()
 setBottom()
 }
 
+/* 🔥 AUTO CLOSE SIDEBAR MOBILE */
+if(window.innerWidth < 768){
+document.querySelector(".sidebar").classList.remove("active")
+}
+
 data.forEach(m=>{
 if(m.role==="user"){
 addUserMessage(m.message)
@@ -358,8 +344,6 @@ addBotMessage(m.message)
 scrollBottom()
 })
 }
-
-/* ---------- MESSAGE UI ---------- */
 
 function addUserMessage(msg){
 chatbox.innerHTML+=`
@@ -378,14 +362,10 @@ chatbox.innerHTML+=`
 </div>`
 }
 
-/* ---------- COPY ---------- */
-
 function copyText(text){
 navigator.clipboard.writeText(text)
 alert("Copied!")
 }
-
-/* ---------- SEND ---------- */
 
 function sendMessage(){
 
@@ -397,7 +377,6 @@ setBottom()
 addUserMessage(msg)
 message.value=""
 
-// 🔥 LOADER INSTEAD OF THINKING
 let typingDiv=document.createElement("div")
 typingDiv.className="bot"
 typingDiv.innerHTML=`<div class="msg"><div class="loader"></div></div>`
@@ -418,7 +397,6 @@ chat_id:currentChat
 
 typingDiv.innerHTML=""
 
-// 🔥 STREAM EFFECT
 let i=0
 let temp=""
 let interval=setInterval(()=>{
@@ -441,8 +419,6 @@ loadChats()
 })
 }
 
-/* ---------- ENTER ---------- */
-
 message.addEventListener("keydown",e=>{
 if(e.key==="Enter" && !e.shiftKey){
 e.preventDefault()
@@ -450,13 +426,10 @@ sendMessage()
 }
 })
 
-/* ---------- INIT ---------- */
-
 loadChats()
 newChat()
 
 </script>
 
 </body>
-
 </html>
