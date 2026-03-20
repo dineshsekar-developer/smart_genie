@@ -50,7 +50,15 @@ width:90%;
 
 /* ---------- MENU BUTTON ---------- */
 
+/* 🔥 NEW FIX: Desktop la hide */
 .menu-btn{
+display:none;
+}
+
+/* 🔥 Mobile la mattum show */
+@media (max-width:768px){
+.menu-btn{
+display:block;
 position:fixed;
 top:10px;
 left:10px;
@@ -61,6 +69,7 @@ border:none;
 padding:8px;
 border-radius:5px;
 cursor:pointer;
+}
 }
 
 /* ---------- MAIN ---------- */
