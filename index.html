@@ -140,6 +140,21 @@ animation:blink 1s infinite;
 100%{opacity:0.3;}
 }
 
+/* 🔥 NEW LOADER */
+.loader{
+border:3px solid #444;
+border-top:3px solid #fff;
+border-radius:50%;
+width:16px;
+height:16px;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
 /* ---------- INPUT ---------- */
 
 .input-wrapper{
@@ -382,9 +397,10 @@ setBottom()
 addUserMessage(msg)
 message.value=""
 
+// 🔥 LOADER INSTEAD OF THINKING
 let typingDiv=document.createElement("div")
 typingDiv.className="bot"
-typingDiv.innerHTML=`<div class="msg typing">🤖 Thinking...</div>`
+typingDiv.innerHTML=`<div class="msg"><div class="loader"></div></div>`
 chatbox.appendChild(typingDiv)
 
 scrollBottom()
@@ -400,11 +416,26 @@ chat_id:currentChat
 .then(r=>r.json())
 .then(d=>{
 
-typingDiv.remove()
+typingDiv.innerHTML=""
 
-addBotMessage(d.reply)
-
+// 🔥 STREAM EFFECT
+let i=0
+let temp=""
+let interval=setInterval(()=>{
+if(i<d.reply.length){
+temp+=d.reply[i]
+typingDiv.innerHTML=`
+<div>
+<div class="msg">${marked.parse(temp)}</div>
+<div class="copy-btn" onclick="copyText(\`${d.reply}\`)">⧉ Copy</div>
+</div>`
+i++
 scrollBottom()
+}else{
+clearInterval(interval)
+}
+},10)
+
 loadChats()
 
 })
