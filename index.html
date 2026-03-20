@@ -10,6 +10,8 @@
 
 <style>
 
+/* SAME CSS — NO CHANGE */
+
 body{
 font-family:"Segoe UI",sans-serif;
 margin:0;
@@ -18,8 +20,6 @@ height:100vh;
 overflow:hidden;
 background:#1e1e1e;
 }
-
-/* ---------- SIDEBAR ---------- */
 
 .sidebar{
 width:260px;
@@ -31,7 +31,6 @@ border-right:1px solid #333;
 transition:0.3s;
 }
 
-/* 🔥 NEW CHAT BUTTON */
 .newchat{
 width:100%;
 padding:10px;
@@ -48,7 +47,6 @@ cursor:pointer;
 background:#0e8e6f;
 }
 
-/* 🔥 CHAT ITEM */
 .chat-item{
 padding:10px;
 border-radius:8px;
@@ -67,13 +65,11 @@ background:#2a2a2a;
 font-size:14px;
 }
 
-/* 🔥 MENU ICON */
 .menu{
 cursor:pointer;
 padding:5px;
 }
 
-/* 🔥 DROPDOWN */
 .dropdown{
 display:none;
 position:absolute;
@@ -93,7 +89,6 @@ border-radius:5px;
 background:#444;
 }
 
-/* 🔥 MOBILE FIX */
 @media (max-width:768px){
 .sidebar{
 position:fixed;
@@ -109,8 +104,6 @@ left:0;
 width:90%;
 }
 }
-
-/* ---------- MENU BUTTON ---------- */
 
 .menu-btn{
 display:none;
@@ -132,8 +125,6 @@ cursor:pointer;
 }
 }
 
-/* ---------- MAIN ---------- */
-
 .main{
 flex:1;
 display:flex;
@@ -141,8 +132,6 @@ flex-direction:column;
 position:relative;
 width:100%;
 }
-
-/* ---------- CHAT ---------- */
 
 #chatbox{
 flex:1;
@@ -177,8 +166,6 @@ background:#2d2d2d;
 color:white;
 }
 
-/* ---------- COPY BUTTON ---------- */
-
 .copy-btn{
 font-size:12px;
 margin-top:5px;
@@ -189,8 +176,6 @@ opacity:0.6;
 .copy-btn:hover{
 opacity:1;
 }
-
-/* ---------- LOADER ---------- */
 
 .loader{
 border:3px solid #444;
@@ -205,8 +190,6 @@ animation:spin 1s linear infinite;
 0%{transform:rotate(0deg);}
 100%{transform:rotate(360deg);}
 }
-
-/* ---------- INPUT ---------- */
 
 .input-wrapper{
 position:absolute;
@@ -255,8 +238,6 @@ color:white;
 font-size:16px;
 }
 
-/* ---------- EMPTY ---------- */
-
 .welcome{
 text-align:center;
 margin-top:20%;
@@ -272,7 +253,7 @@ opacity:0.7;
 
 <div class="sidebar">
 <h3>Your Chats</h3>
-<button class="newchat" onclick="newChat()">+ New Chat</button>
+<button class="newchat" onclick="newChat()">New Chat</button>
 <div id="chatList"></div>
 </div>
 
@@ -291,7 +272,7 @@ opacity:0.7;
 
 <script>
 
-/* SAME JS — NO CHANGE */
+/* SAME JS — ONLY RENAME ADDED */
 
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
@@ -358,7 +339,8 @@ chatList.innerHTML+=`
 <span onclick="loadChat(${c.id})">${c.title}</span>
 <span class="menu" onclick="toggleMenu(${c.id})">⋮</span>
 <div class="dropdown" id="menu${c.id}">
-<div onclick="deleteChat(${c.id})">🗑 Delete</div>
+<div onclick="renameChat(${c.id})"> Rename</div>
+<div onclick="deleteChat(${c.id})"> Delete</div>
 </div>
 </div>`
 })
@@ -368,6 +350,20 @@ chatList.innerHTML+=`
 function toggleMenu(id){
 let m=document.getElementById("menu"+id)
 m.style.display = m.style.display==="block"?"none":"block"
+}
+
+function renameChat(id){
+let newTitle = prompt("Enter new chat title:")
+if(!newTitle) return
+
+fetch("/rename_chat/"+id,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({title:newTitle})
+})
+.then(()=>{
+loadChats()
+})
 }
 
 function deleteChat(id){
