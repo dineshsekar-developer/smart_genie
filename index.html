@@ -15,23 +15,22 @@ font-family:"Segoe UI",sans-serif;
 margin:0;
 display:flex;
 height:100vh;
-overflow:hidden;
-background:#1e1e1e;
+background:#ffffff;
 }
 
 /* ---------- SIDEBAR ---------- */
 
 .sidebar{
 width:260px;
-background:#171717;
-color:white;
+background:#f7f7f8;
+color:black;
 padding:10px;
 overflow-y:auto;
-border-right:1px solid #333;
+border-right:1px solid #ddd;
 transition:0.3s;
 }
 
-/* 🔥 MOBILE FIX */
+/* MOBILE */
 @media (max-width:768px){
 .sidebar{
 position:fixed;
@@ -43,24 +42,26 @@ z-index:20;
 .sidebar.active{
 left:0;
 }
-.chat-input{
-width:90%;
-}
 }
 
 /* ---------- MENU BUTTON ---------- */
 
 .menu-btn{
+display:none;
+}
+
+@media (max-width:768px){
+.menu-btn{
+display:block;
 position:fixed;
 top:10px;
 left:10px;
 z-index:30;
-background:#2a2a2a;
-color:white;
-border:none;
+background:white;
+border:1px solid #ccc;
 padding:8px;
-border-radius:5px;
-cursor:pointer;
+border-radius:6px;
+}
 }
 
 /* ---------- MAIN ---------- */
@@ -69,8 +70,7 @@ cursor:pointer;
 flex:1;
 display:flex;
 flex-direction:column;
-position:relative;
-width:100%;
+height:100vh;
 }
 
 /* ---------- CHAT ---------- */
@@ -80,8 +80,9 @@ flex:1;
 overflow-y:auto;
 padding:20px;
 padding-bottom:120px;
-scroll-behavior:smooth;
 }
+
+/* ---------- MESSAGE ---------- */
 
 .user,.bot{
 margin:12px;
@@ -95,7 +96,6 @@ display:flex;
 padding:12px;
 border-radius:12px;
 max-width:65%;
-line-height:1.5;
 }
 
 .user .msg{
@@ -104,73 +104,43 @@ color:white;
 }
 
 .bot .msg{
-background:#2d2d2d;
-color:white;
-}
-
-/* ---------- COPY BUTTON ---------- */
-
-.copy-btn{
-font-size:12px;
-margin-top:5px;
-cursor:pointer;
-opacity:0.6;
-}
-
-.copy-btn:hover{
-opacity:1;
-}
-
-/* ---------- LOADER ---------- */
-
-.loader{
-border:3px solid #444;
-border-top:3px solid #fff;
-border-radius:50%;
-width:16px;
-height:16px;
-animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
+background:#f1f1f1;
+color:black;
 }
 
 /* ---------- INPUT ---------- */
 
 .input-wrapper{
-position:absolute;
+position:fixed;
+bottom:0;
 left:0;
 width:100%;
 display:flex;
 justify-content:center;
+background:white;
+border-top:1px solid #ddd;
+padding:10px;
 z-index:10;
-transition:0.3s;
-}
-
-.center{
-top:50%;
-transform:translateY(-50%);
-}
-
-.bottom{
-bottom:20px;
 }
 
 .chat-input{
 display:flex;
-background:#2a2a2a;
+background:#f1f1f1;
 border-radius:30px;
 padding:12px;
 width:60%;
+}
+
+@media (max-width:768px){
+.chat-input{
+width:90%;
+}
 }
 
 #message{
 flex:1;
 border:none;
 background:transparent;
-color:white;
 outline:none;
 font-size:15px;
 }
@@ -183,15 +153,26 @@ width:40px;
 height:40px;
 cursor:pointer;
 color:white;
-font-size:16px;
 }
 
-/* ---------- EMPTY ---------- */
+/* ---------- DELETE ---------- */
 
-.welcome{
-text-align:center;
-margin-top:20%;
-opacity:0.7;
+.dropdown{
+display:none;
+background:white;
+border:1px solid #ddd;
+padding:5px;
+border-radius:6px;
+position:absolute;
+}
+
+.dropdown div{
+padding:6px;
+cursor:pointer;
+}
+
+.dropdown div:hover{
+background:#eee;
 }
 
 </style>
@@ -199,12 +180,11 @@ opacity:0.7;
 
 <body>
 
-<!-- 🔥 MENU BUTTON -->
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
 <div class="sidebar">
 <h3>Your Chats</h3>
-<button class="newchat" onclick="newChat()">+ New Chat</button>
+<button onclick="newChat()">+ New Chat</button>
 <div id="chatList"></div>
 </div>
 
@@ -212,7 +192,7 @@ opacity:0.7;
 
 <div id="chatbox"></div>
 
-<div id="inputArea" class="input-wrapper center">
+<div id="inputArea" class="input-wrapper">
 <div class="chat-input">
 <input id="message" placeholder="Ask anything...">
 <button class="send-btn" onclick="sendMessage()">➤</button>
@@ -223,74 +203,39 @@ opacity:0.7;
 
 <script>
 
-/* ---------- SIDEBAR TOGGLE ---------- */
+/* SIDEBAR */
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
 }
 
-/* ---------- SESSION ---------- */
-function getSessionId(){
-let id = localStorage.getItem("session_id")
-if(!id){
-id = crypto.randomUUID()
-localStorage.setItem("session_id", id)
-}
-return id
-}
-
-let sessionId = getSessionId()
 let currentChat=null
 
 function scrollBottom(){
 chatbox.scrollTop=chatbox.scrollHeight
 }
 
-function setCenter(){
-inputArea.className="input-wrapper center"
-}
-
-function setBottom(){
-inputArea.className="input-wrapper bottom"
-}
-
-function showWelcome(){
-chatbox.innerHTML=`<div class="welcome">
-<h2>✨ Smart Genie</h2>
-<p>Ask anything and explore AI</p>
-</div>`
-setCenter()
-}
-
-/* ---------- CHAT ---------- */
+/* CHAT */
 
 function newChat(){
-fetch("/new_chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({session_id:sessionId})
-})
+fetch("/new_chat",{method:"POST"})
 .then(r=>r.json())
 .then(d=>{
 currentChat=d.chat_id
-showWelcome()
+chatbox.innerHTML=""
 loadChats()
 })
 }
 
 function loadChats(){
-fetch("/get_chats",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({session_id:sessionId})
-})
+fetch("/get_chats")
 .then(r=>r.json())
 .then(data=>{
 chatList.innerHTML=""
 data.forEach(c=>{
 chatList.innerHTML+=`
-<div class="chat-item">
+<div style="position:relative">
 <span onclick="loadChat(${c.id})">${c.title}</span>
-<span class="menu" onclick="toggleMenu(${c.id})">⋮</span>
+<span onclick="toggleMenu(${c.id})">⋮</span>
 <div class="dropdown" id="menu${c.id}">
 <div onclick="deleteChat(${c.id})">Delete</div>
 </div>
@@ -301,17 +246,13 @@ chatList.innerHTML+=`
 
 function toggleMenu(id){
 let m=document.getElementById("menu"+id)
-m.style.display = m.style.display==="block"?"none":"block"
+m.style.display=m.style.display==="block"?"none":"block"
 }
 
 function deleteChat(id){
-if(!confirm("Delete this chat?")) return
-
+if(!confirm("Delete chat?")) return
 fetch("/delete_chat/"+id,{method:"POST"})
-.then(()=>{
-loadChats()
-showWelcome()
-})
+.then(()=>loadChats())
 }
 
 function loadChat(id){
@@ -322,105 +263,50 @@ fetch("/load_chat/"+id)
 .then(data=>{
 chatbox.innerHTML=""
 
-if(data.length===0){
-setCenter()
-}else{
-setBottom()
-}
-
-/* 🔥 AUTO CLOSE SIDEBAR MOBILE */
-if(window.innerWidth < 768){
-document.querySelector(".sidebar").classList.remove("active")
-}
-
 data.forEach(m=>{
 if(m.role==="user"){
-addUserMessage(m.message)
+chatbox.innerHTML+=`<div class="user"><div class="msg">${m.message}</div></div>`
 }else{
-addBotMessage(m.message)
+chatbox.innerHTML+=`<div class="bot"><div class="msg">${marked.parse(m.message)}</div></div>`
 }
 })
 
 scrollBottom()
+
+if(window.innerWidth<768){
+document.querySelector(".sidebar").classList.remove("active")
+}
+
 })
 }
 
-function addUserMessage(msg){
-chatbox.innerHTML+=`
-<div class="user">
-<div class="msg">${msg}</div>
-</div>`
-}
-
-function addBotMessage(msg){
-chatbox.innerHTML+=`
-<div class="bot">
-<div>
-<div class="msg">${marked.parse(msg)}</div>
-<div class="copy-btn" onclick="copyText(\`${msg}\`)">⧉ Copy</div>
-</div>
-</div>`
-}
-
-function copyText(text){
-navigator.clipboard.writeText(text)
-alert("Copied!")
-}
+/* SEND */
 
 function sendMessage(){
 
 let msg=message.value.trim()
 if(!msg || !currentChat) return
 
-setBottom()
-
-addUserMessage(msg)
+chatbox.innerHTML+=`<div class="user"><div class="msg">${msg}</div></div>`
 message.value=""
-
-let typingDiv=document.createElement("div")
-typingDiv.className="bot"
-typingDiv.innerHTML=`<div class="msg"><div class="loader"></div></div>`
-chatbox.appendChild(typingDiv)
 
 scrollBottom()
 
 fetch("/chat",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-message:msg,
-chat_id:currentChat
-})
+body:JSON.stringify({message:msg,chat_id:currentChat})
 })
 .then(r=>r.json())
 .then(d=>{
-
-typingDiv.innerHTML=""
-
-let i=0
-let temp=""
-let interval=setInterval(()=>{
-if(i<d.reply.length){
-temp+=d.reply[i]
-typingDiv.innerHTML=`
-<div>
-<div class="msg">${marked.parse(temp)}</div>
-<div class="copy-btn" onclick="copyText(\`${d.reply}\`)">⧉ Copy</div>
-</div>`
-i++
+chatbox.innerHTML+=`<div class="bot"><div class="msg">${marked.parse(d.reply)}</div></div>`
 scrollBottom()
-}else{
-clearInterval(interval)
-}
-},10)
-
 loadChats()
-
 })
 }
 
 message.addEventListener("keydown",e=>{
-if(e.key==="Enter" && !e.shiftKey){
+if(e.key==="Enter"){
 e.preventDefault()
 sendMessage()
 }
