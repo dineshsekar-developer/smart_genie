@@ -143,11 +143,11 @@ animation:blink 1s infinite;
 /* ---------- INPUT ---------- */
 
 .input-wrapper{
-position:absolute;   /* 🔥 FIXED */
+position:absolute;
 left:0;
 width:100%;
 display:flex;
-justify-content:center; /* 🔥 CENTER PERFECT */
+justify-content:center;
 z-index:10;
 transition:0.3s;
 }
@@ -166,7 +166,7 @@ display:flex;
 background:#2a2a2a;
 border-radius:30px;
 padding:12px;
-width:60%; /* 🔥 keeps same width */
+width:60%;
 }
 
 #message{
@@ -229,6 +229,18 @@ opacity:0.7;
 
 <script>
 
+/* 🔥 ---------- SESSION ID FIX ---------- */
+function getSessionId(){
+let id = localStorage.getItem("session_id")
+if(!id){
+id = crypto.randomUUID()
+localStorage.setItem("session_id", id)
+}
+return id
+}
+
+let sessionId = getSessionId()
+
 let currentChat=null
 
 function scrollBottom(){
@@ -254,7 +266,11 @@ setCenter()
 /* ---------- CHAT MANAGEMENT ---------- */
 
 function newChat(){
-fetch("/new_chat",{method:"POST"})
+fetch("/new_chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({session_id:sessionId})
+})
 .then(r=>r.json())
 .then(d=>{
 currentChat=d.chat_id
@@ -264,7 +280,11 @@ loadChats()
 }
 
 function loadChats(){
-fetch("/get_chats")
+fetch("/get_chats",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({session_id:sessionId})
+})
 .then(r=>r.json())
 .then(data=>{
 chatList.innerHTML=""
@@ -372,7 +392,10 @@ scrollBottom()
 fetch("/chat",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({message:msg,chat_id:currentChat})
+body:JSON.stringify({
+message:msg,
+chat_id:currentChat
+})
 })
 .then(r=>r.json())
 .then(d=>{
