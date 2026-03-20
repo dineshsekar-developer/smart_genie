@@ -31,6 +31,68 @@ border-right:1px solid #333;
 transition:0.3s;
 }
 
+/* 🔥 NEW CHAT BUTTON */
+.newchat{
+width:100%;
+padding:10px;
+margin-bottom:15px;
+background:#10a37f;
+border:none;
+border-radius:8px;
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+.newchat:hover{
+background:#0e8e6f;
+}
+
+/* 🔥 CHAT ITEM */
+.chat-item{
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:5px;
+}
+
+.chat-item:hover{
+background:#2a2a2a;
+}
+
+.chat-item span{
+font-size:14px;
+}
+
+/* 🔥 MENU ICON */
+.menu{
+cursor:pointer;
+padding:5px;
+}
+
+/* 🔥 DROPDOWN */
+.dropdown{
+display:none;
+position:absolute;
+background:#2a2a2a;
+border-radius:6px;
+padding:5px;
+margin-top:5px;
+}
+
+.dropdown div{
+padding:8px;
+cursor:pointer;
+border-radius:5px;
+}
+
+.dropdown div:hover{
+background:#444;
+}
+
 /* 🔥 MOBILE FIX */
 @media (max-width:768px){
 .sidebar{
@@ -50,12 +112,10 @@ width:90%;
 
 /* ---------- MENU BUTTON ---------- */
 
-/* 🔥 NEW FIX: Desktop la hide */
 .menu-btn{
 display:none;
 }
 
-/* 🔥 Mobile la mattum show */
 @media (max-width:768px){
 .menu-btn{
 display:block;
@@ -208,7 +268,6 @@ opacity:0.7;
 
 <body>
 
-<!-- 🔥 MENU BUTTON -->
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
 <div class="sidebar">
@@ -232,12 +291,12 @@ opacity:0.7;
 
 <script>
 
-/* ---------- SIDEBAR TOGGLE ---------- */
+/* SAME JS — NO CHANGE */
+
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
 }
 
-/* ---------- SESSION ---------- */
 function getSessionId(){
 let id = localStorage.getItem("session_id")
 if(!id){
@@ -270,8 +329,6 @@ chatbox.innerHTML=`<div class="welcome">
 setCenter()
 }
 
-/* ---------- CHAT ---------- */
-
 function newChat(){
 fetch("/new_chat",{
 method:"POST",
@@ -301,7 +358,7 @@ chatList.innerHTML+=`
 <span onclick="loadChat(${c.id})">${c.title}</span>
 <span class="menu" onclick="toggleMenu(${c.id})">⋮</span>
 <div class="dropdown" id="menu${c.id}">
-<div onclick="deleteChat(${c.id})">Delete</div>
+<div onclick="deleteChat(${c.id})">🗑 Delete</div>
 </div>
 </div>`
 })
@@ -337,7 +394,6 @@ setCenter()
 setBottom()
 }
 
-/* 🔥 AUTO CLOSE SIDEBAR MOBILE */
 if(window.innerWidth < 768){
 document.querySelector(".sidebar").classList.remove("active")
 }
