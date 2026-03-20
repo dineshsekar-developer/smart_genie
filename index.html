@@ -265,6 +265,10 @@ opacity:0.7;
 <div class="chat-input">
 <input id="message" placeholder="Ask anything...">
 <button class="send-btn" onclick="sendMessage()">➤</button>
+
+<!-- 🔥 NEW IMAGE BUTTON -->
+<button class="send-btn" onclick="generateImage()">🎨</button>
+
 </div>
 </div>
 
@@ -272,7 +276,7 @@ opacity:0.7;
 
 <script>
 
-/* SAME JS — ONLY RENAME ADDED */
+/* SAME JS — ONLY IMAGE FUNCTION ADDED */
 
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
@@ -426,6 +430,43 @@ chatbox.innerHTML+=`
 function copyText(text){
 navigator.clipboard.writeText(text)
 alert("Copied!")
+}
+
+/* 🔥 NEW IMAGE FUNCTION */
+
+function generateImage(){
+
+let msg=message.value.trim()
+if(!msg || !currentChat) return
+
+setBottom()
+
+addUserMessage(msg)
+message.value=""
+
+fetch("/generate_image",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({prompt:msg})
+})
+.then(r=>r.json())
+.then(d=>{
+
+if(!d.image){
+alert("Image generation failed")
+return
+}
+
+chatbox.innerHTML+=`
+<div class="bot">
+<div>
+<img src="${d.image}" style="max-width:300px;border-radius:10px;">
+</div>
+</div>`
+
+scrollBottom()
+
+})
 }
 
 function sendMessage(){
