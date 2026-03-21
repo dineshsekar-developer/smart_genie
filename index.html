@@ -253,7 +253,7 @@ font-size:15px;
 }
 
 .send-btn{
-background:#038803;
+background:#10a37f;
 border:none;
 border-radius:50%;
 width:40px;
@@ -271,53 +271,11 @@ opacity:0.7;
 
 .welcome h2 { color:white; }
 .welcome p { color:white; }
-/* 🔥 LIGHT MODE ADDED */
-.light-mode{
-background:#f7f7f8;
-color:black;
-}
-
-.light-mode .sidebar{
-background:#ffffff;
-color:black;
-border-right:1px solid #ddd;
-}
-
-.light-mode .chat-input{
-background:#888484;
-color:black;
-border:1px solid #dddddd;
-}
-
-.light-mode .bot .msg{
-background:#b3abab;
-color:black;
-}
-
-.light-mode .user .msg{
-background:#000000;
-color:white;
-}
-
-.light-mode #message{
-color:black;
-}
-
-.light-mode .welcome h2,
-.light-mode .welcome p{
-color:black;
-}
 
 </style>
 </head>
 
 <body>
-    <button onclick="toggleTheme()" 
-style="position:fixed;top:10px;right:10px;z-index:2000;
-background:#2a2a2a;color:white;border:none;
-padding:8px;border-radius:5px;cursor:pointer;">
-🌙
-</button>
 
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
@@ -559,23 +517,6 @@ sendMessage()
 
 loadChats()
 newChat()
-/* 🔥 THEME TOGGLE */
-function toggleTheme(){
-document.body.classList.toggle("light-mode")
-
-if(document.body.classList.contains("light-mode")){
-localStorage.setItem("theme","light")
-}else{
-localStorage.setItem("theme","dark")
-}
-}
-
-/* 🔥 LOAD SAVED THEME */
-window.onload = function(){
-if(localStorage.getItem("theme")==="light"){
-document.body.classList.add("light-mode")
-}
-}
 
 </script>
 
