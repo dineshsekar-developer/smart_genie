@@ -10,14 +10,14 @@
 
 <style>
 
-/* SAME CSS — ONLY SCROLL FIX ADDED */
+/* SAME CSS — ONLY SIDEBAR FIX */
 
 body{
 font-family:"Segoe UI",sans-serif;
 margin:0;
 display:flex;
 height:100vh;
-overflow:auto; /* 🔥 FIX */
+overflow:auto;
 background:#1e1e1e;
 }
 
@@ -96,13 +96,16 @@ body{
 flex-direction:column;
 }
 
-/* FULL HIDE SIDEBAR */
+/* 🔥 FULL HIDE SIDEBAR */
 .sidebar{
 position:fixed;
-left:-260px;
+left:-100%;   /* 🔥 FIX */
 top:0;
+width:260px;
 height:100%;
-z-index:20;
+z-index:1000;
+background:#171717;
+transition:0.3s ease;
 }
 
 .sidebar.active{
@@ -117,7 +120,6 @@ width:100%;
 width:95%;
 }
 
-/* 🔥 SCROLL FIX */
 #chatbox{
 overflow-y:auto;
 height:100%;
@@ -134,7 +136,7 @@ display:block;
 position:fixed;
 top:10px;
 left:10px;
-z-index:30;
+z-index:1100;
 background:#2a2a2a;
 color:white;
 border:none;
@@ -210,7 +212,6 @@ animation:spin 1s linear infinite;
 100%{transform:rotate(360deg);}
 }
 
-/* 🔥 ALWAYS BOTTOM */
 .input-wrapper{
 position:fixed;
 bottom:10px;
@@ -290,8 +291,6 @@ color: white;
 </div>
 
 <script>
-
-/* SAME JS — NO CHANGE */
 
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
