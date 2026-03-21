@@ -10,14 +10,14 @@
 
 <style>
 
-/* SAME CSS — ONLY SMALL FIXES ADDED */
+/* SAME CSS — ONLY SCROLL FIX ADDED */
 
 body{
 font-family:"Segoe UI",sans-serif;
 margin:0;
 display:flex;
 height:100vh;
-overflow:hidden;
+overflow:auto; /* 🔥 FIX */
 background:#1e1e1e;
 }
 
@@ -105,19 +105,22 @@ height:100%;
 z-index:20;
 }
 
-/* OPEN WHEN ACTIVE */
 .sidebar.active{
 left:0;
 }
 
-/* MAIN FULL WIDTH */
 .main{
 width:100%;
 }
 
-/* INPUT FULL WIDTH */
 .chat-input{
 width:95%;
+}
+
+/* 🔥 SCROLL FIX */
+#chatbox{
+overflow-y:auto;
+height:100%;
 }
 }
 
@@ -277,7 +280,6 @@ color: white;
 
 <div id="chatbox"></div>
 
-<!-- 🔥 REMOVED center/bottom switching -->
 <div id="inputArea" class="input-wrapper">
 <div class="chat-input">
 <input id="message" placeholder="Ask anything...">
@@ -289,7 +291,7 @@ color: white;
 
 <script>
 
-/* SAME JS — ONLY REMOVED CENTER/BOTTOM LOGIC */
+/* SAME JS — NO CHANGE */
 
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
