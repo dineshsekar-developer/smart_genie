@@ -10,7 +10,7 @@
 
 <style>
 
-/* SAME CSS — ONLY SIDEBAR FIX */
+/* SAME CSS — ONLY INPUT POSITION ADDED */
 
 body{
 font-family:"Segoe UI",sans-serif;
@@ -96,10 +96,9 @@ body{
 flex-direction:column;
 }
 
-/* 🔥 FULL HIDE SIDEBAR */
 .sidebar{
 position:fixed;
-left:-100%;   /* 🔥 FIX */
+left:-100%;
 top:0;
 width:260px;
 height:100%;
@@ -212,14 +211,27 @@ animation:spin 1s linear infinite;
 100%{transform:rotate(360deg);}
 }
 
+/* 🔥 INPUT POSITION */
 .input-wrapper{
-position:fixed;
-bottom:10px;
+position:absolute;
 left:0;
 width:100%;
 display:flex;
 justify-content:center;
 z-index:10;
+transition:0.3s;
+}
+
+.center{
+top:50%;
+transform:translateY(-50%);
+}
+
+.bottom{
+position:fixed;
+bottom:10px;
+left:0;
+transform:none;
 }
 
 .chat-input{
@@ -256,13 +268,8 @@ margin-top:20%;
 opacity:0.7;
 }
 
-.welcome h2 {
-color: white;
-}
-
-.welcome p {
-color: white;
-}
+.welcome h2 { color:white; }
+.welcome p { color:white; }
 
 </style>
 </head>
@@ -281,7 +288,8 @@ color: white;
 
 <div id="chatbox"></div>
 
-<div id="inputArea" class="input-wrapper">
+<!-- 🔥 DEFAULT CENTER -->
+<div id="inputArea" class="input-wrapper center">
 <div class="chat-input">
 <input id="message" placeholder="Ask anything...">
 <button class="send-btn" onclick="sendMessage()">➤</button>
@@ -294,6 +302,15 @@ color: white;
 
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
+}
+
+/* 🔥 NEW FUNCTIONS */
+function setCenter(){
+inputArea.className="input-wrapper center"
+}
+
+function setBottom(){
+inputArea.className="input-wrapper bottom"
 }
 
 function getSessionId(){
@@ -317,6 +334,7 @@ chatbox.innerHTML=`<div class="welcome">
 <h2>✨ 𝐒𝐦𝐚𝐫𝐭 𝐆𝐞𝐧𝐢𝐞</h2>
 <p>"𝐀𝐈 𝐓𝐡𝐚𝐭 𝐔𝐧𝐝𝐞𝐫𝐬𝐭𝐚𝐧𝐝𝐬 𝐘𝐨𝐮"</p>
 </div>`
+setCenter()  // 🔥 center initially
 }
 
 function newChat(){
@@ -393,6 +411,12 @@ fetch("/load_chat/"+id)
 .then(data=>{
 chatbox.innerHTML=""
 
+if(data.length===0){
+setCenter()
+}else{
+setBottom()
+}
+
 if(window.innerWidth < 768){
 document.querySelector(".sidebar").classList.remove("active")
 }
@@ -435,6 +459,8 @@ function sendMessage(){
 
 let msg=message.value.trim()
 if(!msg || !currentChat) return
+
+setBottom() // 🔥 move to bottom after first message
 
 addUserMessage(msg)
 message.value=""
