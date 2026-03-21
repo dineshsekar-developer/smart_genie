@@ -10,7 +10,7 @@
 
 <style>
 
-/* SAME CSS — NO CHANGE */
+/* SAME CSS — ONLY SMALL FIXES ADDED */
 
 body{
 font-family:"Segoe UI",sans-serif;
@@ -89,7 +89,14 @@ border-radius:5px;
 background:#444;
 }
 
+/* 🔥 MOBILE FIX */
 @media (max-width:768px){
+
+body{
+flex-direction:column;
+}
+
+/* FULL HIDE SIDEBAR */
 .sidebar{
 position:fixed;
 left:-260px;
@@ -97,11 +104,20 @@ top:0;
 height:100%;
 z-index:20;
 }
+
+/* OPEN WHEN ACTIVE */
 .sidebar.active{
 left:0;
 }
+
+/* MAIN FULL WIDTH */
+.main{
+width:100%;
+}
+
+/* INPUT FULL WIDTH */
 .chat-input{
-width:90%;
+width:95%;
 }
 }
 
@@ -191,23 +207,15 @@ animation:spin 1s linear infinite;
 100%{transform:rotate(360deg);}
 }
 
+/* 🔥 ALWAYS BOTTOM */
 .input-wrapper{
-position:absolute;
+position:fixed;
+bottom:10px;
 left:0;
 width:100%;
 display:flex;
 justify-content:center;
 z-index:10;
-transition:0.3s;
-}
-
-.center{
-top:50%;
-transform:translateY(-50%);
-}
-
-.bottom{
-bottom:20px;
 }
 
 .chat-input{
@@ -243,6 +251,7 @@ text-align:center;
 margin-top:20%;
 opacity:0.7;
 }
+
 .welcome h2 {
 color: white;
 }
@@ -268,7 +277,8 @@ color: white;
 
 <div id="chatbox"></div>
 
-<div id="inputArea" class="input-wrapper center">
+<!-- 🔥 REMOVED center/bottom switching -->
+<div id="inputArea" class="input-wrapper">
 <div class="chat-input">
 <input id="message" placeholder="Ask anything...">
 <button class="send-btn" onclick="sendMessage()">➤</button>
@@ -279,7 +289,7 @@ color: white;
 
 <script>
 
-/* SAME JS — IMAGE FUNCTION REMOVED */
+/* SAME JS — ONLY REMOVED CENTER/BOTTOM LOGIC */
 
 function toggleSidebar(){
 document.querySelector(".sidebar").classList.toggle("active")
@@ -301,20 +311,11 @@ function scrollBottom(){
 chatbox.scrollTop=chatbox.scrollHeight
 }
 
-function setCenter(){
-inputArea.className="input-wrapper center"
-}
-
-function setBottom(){
-inputArea.className="input-wrapper bottom"
-}
-
 function showWelcome(){
 chatbox.innerHTML=`<div class="welcome">
 <h2>✨ 𝐒𝐦𝐚𝐫𝐭 𝐆𝐞𝐧𝐢𝐞</h2>
 <p>"𝐀𝐈 𝐓𝐡𝐚𝐭 𝐔𝐧𝐝𝐞𝐫𝐬𝐭𝐚𝐧𝐝𝐬 𝐘𝐨𝐮"</p>
 </div>`
-setCenter()
 }
 
 function newChat(){
@@ -391,12 +392,6 @@ fetch("/load_chat/"+id)
 .then(data=>{
 chatbox.innerHTML=""
 
-if(data.length===0){
-setCenter()
-}else{
-setBottom()
-}
-
 if(window.innerWidth < 768){
 document.querySelector(".sidebar").classList.remove("active")
 }
@@ -439,8 +434,6 @@ function sendMessage(){
 
 let msg=message.value.trim()
 if(!msg || !currentChat) return
-
-setBottom()
 
 addUserMessage(msg)
 message.value=""
