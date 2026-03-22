@@ -27,7 +27,7 @@ background:#171717;
 color:white;
 padding:10px;
 border-right:1px solid #333;
-transition:0.3s;
+transition:all 0.3s ease;
 
 /* 🔥 IMPORTANT FIX */
 display:flex;
@@ -111,8 +111,8 @@ flex-direction:column;
 position:fixed;
 left:-100%;
 top:0;
-width:260px;
-height:100vh;   /* 🔥 change this */
+width:100%;   /* 🔥 CHANGE THIS */
+height:100vh;
 z-index:1000;
 background:#171717;
 transition:0.3s ease;
@@ -371,6 +371,17 @@ color:black;
 .light-mode .welcome p{
 color:black;
 }
+/* 🔥 OVERLAY (ADD HERE) */
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:900;
+display:none;
+}
 </style>
 </head>
 
@@ -385,8 +396,9 @@ color:black;
 <button onclick="toggleTheme()">🌙 Theme</button>
 </div>
 </div>
-
+<div class="overlay" onclick="toggleSidebar()"></div>
 <div class="main">
+
 
 <div id="chatbox"></div>
 
@@ -403,7 +415,16 @@ color:black;
 <script>
 
 function toggleSidebar(){
-document.querySelector(".sidebar").classList.toggle("active")
+let sidebar = document.querySelector(".sidebar")
+let overlay = document.querySelector(".overlay")
+
+sidebar.classList.toggle("active")
+
+if(sidebar.classList.contains("active")){
+overlay.style.display = "block"
+}else{
+overlay.style.display = "none"
+}
 }
 
 /* 🔥 NEW FUNCTIONS */
