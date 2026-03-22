@@ -364,18 +364,15 @@ color:black;
 </head>
 
 <body>
-<button onclick="toggleTheme()" 
-style="position:fixed;top:10px;right:10px;z-index:2000;
-background:#2a2a2a;color:white;border:none;
-padding:8px;border-radius:5px;cursor:pointer;">
-🌙
-</button>
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
 <div class="sidebar">
 <h3>Your Chats</h3>
 <button class="newchat" onclick="newChat()">New Chat</button>
 <div id="chatList"></div>
+<div class="sidebar-footer">
+<button onclick="toggleTheme()">🌙 Theme</button>
+</div>
 </div>
 
 <div class="main">
