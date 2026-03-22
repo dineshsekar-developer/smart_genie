@@ -17,7 +17,7 @@ font-family:"Segoe UI",sans-serif;
 margin:0;
 display:flex;
 height:100vh;
-overflow:hidden;   /* 🔥 IMPORTANT FIX */
+overflow:auto;
 background:#1e1e1e;
 }
 
@@ -26,22 +26,11 @@ width:260px;
 background:#171717;
 color:white;
 padding:10px;
-border-right:1px solid #333;
-transition:all 0.3s ease;
-
-/* 🔥 IMPORTANT FIX */
-display:flex;
-flex-direction:column;
-height:100vh;
-}
-#chatList{
-flex:1;
 overflow-y:auto;
+border-right:1px solid #333;
+transition:0.3s;
 }
-.sidebar-footer{
-padding:10px;
-border-top:1px solid #333;
-}
+
 .newchat{
 width:100%;
 padding:10px;
@@ -109,19 +98,17 @@ flex-direction:column;
 
 .sidebar{
 position:fixed;
+left:-100%;
 top:0;
-left:0;
-width:85%;              /* 🔥 better UX */
-height:100vh;
+width:260px;
+height:100%;
 z-index:1000;
 background:#171717;
-
-transform:translateX(-100%);   /* 🔥 IMPORTANT */
-transition:transform 0.3s ease;
+transition:0.3s ease;
 }
 
 .sidebar.active{
-transform:translateX(0);
+left:0;
 }
 
 .main{
@@ -137,57 +124,7 @@ max-width:100%;
 overflow-y:auto;
 height:100%;
 }
-.sidebar{
-display:flex;
-flex-direction:column;
-overflow:hidden;
-}
 
-#chatList{
-flex:1;
-overflow-y:auto;
-}
-
-.sidebar-footer{
-flex-shrink:0;
-}
-/* 🔥 ONLY MOBILE MESSAGE ALIGN FIX */
-.user,.bot{
-margin:8px 0 !important;   /* remove left-right gap */
-}
-
-.msg{
-max-width:90% !important;  /* wider bubbles */
-}
-
-.user{
-justify-content:flex-end;
-padding-right:5px;
-}
-
-.bot{
-justify-content:flex-start;
-padding-left:5px;
-}
-/* 🔥 FULL EDGE MOBILE FIX */
-.user,.bot{
-margin:6px 0 !important;
-}
-
-.msg{
-max-width:100% !important;   /* override old 90% */
-border-radius:10px;
-}
-
-.user{
-justify-content:flex-end;
-padding-right:0;
-}
-
-.bot{
-justify-content:flex-start;
-padding-left:0;
-}
 /* 🔥 ADD THIS */
 .bottom{
 left:0 !important;
@@ -387,34 +324,25 @@ color:black;
 .light-mode .welcome p{
 color:black;
 }
-/* 🔥 OVERLAY (ADD HERE) */
-.overlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-z-index:999;   /* 🔥 IMPORTANT */
-display:none;
-}
 </style>
 </head>
 
 <body>
+<button onclick="toggleTheme()" 
+style="position:fixed;top:10px;right:10px;z-index:2000;
+background:#2a2a2a;color:white;border:none;
+padding:8px;border-radius:5px;cursor:pointer;">
+🌙
+</button>
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
 <div class="sidebar">
 <h3>Your Chats</h3>
 <button class="newchat" onclick="newChat()">New Chat</button>
 <div id="chatList"></div>
-<div class="sidebar-footer">
-<button onclick="toggleTheme()">🌙 Theme</button>
 </div>
-</div>
-<div class="overlay" onclick="toggleSidebar()"></div>
-<div class="main">
 
+<div class="main">
 
 <div id="chatbox"></div>
 
@@ -431,16 +359,7 @@ display:none;
 <script>
 
 function toggleSidebar(){
-let sidebar = document.querySelector(".sidebar")
-let overlay = document.querySelector(".overlay")
-
-sidebar.classList.toggle("active")
-
-if(sidebar.classList.contains("active")){
-overlay.style.display = "block"
-}else{
-overlay.style.display = "none"
-}
+document.querySelector(".sidebar").classList.toggle("active")
 }
 
 /* 🔥 NEW FUNCTIONS */
