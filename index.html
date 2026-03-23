@@ -349,17 +349,11 @@ padding:8px;border-radius:5px;cursor:pointer;">
 <!-- 🔥 DEFAULT CENTER -->
 <div id="inputArea" class="input-wrapper center">
 <div class="chat-input">
-
-<input type="file" id="fileInput" style="display:none">
-
-<button onclick="document.getElementById('fileInput').click()">📎</button>
-
 <input id="message" placeholder="Ask anything...">
-
 <button class="send-btn" onclick="sendMessage()">➤</button>
+</div>
+</div>
 
-</div>
-</div>
 </div>
 
 <script>
@@ -404,6 +398,7 @@ setCenter()  // 🔥 center initially
 function newChat(){
 fetch("/new_chat",{
 method:"POST",
+headers:{"Content-Type":"application/json"},
 body:JSON.stringify({session_id:sessionId})
 })
 .then(r=>r.json())
@@ -535,17 +530,13 @@ chatbox.appendChild(typingDiv)
 
 scrollBottom()
 
-let formData = new FormData();
-formData.append("message", msg);
-formData.append("chat_id", currentChat);
-
-if(selectedFile){
-formData.append("file", selectedFile);
-}
-
 fetch("/chat",{
 method:"POST",
-body:formData
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+message:msg,
+chat_id:currentChat
+})
 })
 .then(r=>r.json())
 .then(d=>{
