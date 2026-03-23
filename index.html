@@ -349,11 +349,17 @@ padding:8px;border-radius:5px;cursor:pointer;">
 <!-- 🔥 DEFAULT CENTER -->
 <div id="inputArea" class="input-wrapper center">
 <div class="chat-input">
-<input id="message" placeholder="Ask anything...">
-<button class="send-btn" onclick="sendMessage()">➤</button>
-</div>
-</div>
 
+<input type="file" id="fileInput" style="display:none">
+
+<button onclick="document.getElementById('fileInput').click()">📎</button>
+
+<input id="message" placeholder="Ask anything...">
+
+<button class="send-btn" onclick="sendMessage()">➤</button>
+
+</div>
+</div>
 </div>
 
 <script>
