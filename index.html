@@ -404,7 +404,6 @@ setCenter()  // 🔥 center initially
 function newChat(){
 fetch("/new_chat",{
 method:"POST",
-headers:{"Content-Type":"application/json"},
 body:JSON.stringify({session_id:sessionId})
 })
 .then(r=>r.json())
@@ -536,13 +535,17 @@ chatbox.appendChild(typingDiv)
 
 scrollBottom()
 
+let formData = new FormData();
+formData.append("message", msg);
+formData.append("chat_id", currentChat);
+
+if(selectedFile){
+formData.append("file", selectedFile);
+}
+
 fetch("/chat",{
 method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-message:msg,
-chat_id:currentChat
-})
+body:formData
 })
 .then(r=>r.json())
 .then(d=>{
