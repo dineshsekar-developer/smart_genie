@@ -336,6 +336,20 @@ color:black;
 .light-mode .welcome p{
 color:black;
 }
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.4);
+display:none;
+z-index:900;
+}
+
+.overlay.active{
+display:block;
+}
 .light-mode .chat-item span{
 color:#000000;
 }
@@ -378,7 +392,11 @@ padding:8px;border-radius:5px;cursor:pointer;">
 <script>
 
 function toggleSidebar(){
-document.querySelector(".sidebar").classList.toggle("active")
+let sidebar = document.querySelector(".sidebar")
+let overlay = document.getElementById("overlay")
+
+sidebar.classList.toggle("active")
+overlay.classList.toggle("active")
 }
 
 /* 🔥 NEW FUNCTIONS */
@@ -610,25 +628,56 @@ if(localStorage.getItem("theme")==="light"){
 document.body.classList.add("light-mode")
 }
 }
+document.getElementById("overlay").onclick = function(){
+document.querySelector(".sidebar").classList.remove("active")
+this.classList.remove("active")
+}
 document.addEventListener("click", function(e){
 
-if(!e.target.closest(".menu") && !e.target.closest(".dropdown")){
+let sidebar = document.querySelector(".sidebar")
+let menuBtn = document.querySelector(".menu-btn")
 
-document.querySelectorAll(".dropdown").forEach(d=>{
-d.style.display="none"
-})
-
+if(!sidebar.contains(e.target) && !menuBtn.contains(e.target)){
+sidebar.classList.remove("active")
+document.getElementById("overlay").classList.remove("active")
 }
 
 })
-document.addEventListener("touchstart", function(e){
 
+document.addEventListener("click", function(e){
+
+let sidebar = document.querySelector(".sidebar")
+let menuBtn = document.querySelector(".menu-btn")
+
+// 🔥 Sidebar close
+if(!sidebar.contains(e.target) && !menuBtn.contains(e.target)){
+sidebar.classList.remove("active")
+document.getElementById("overlay").classList.remove("active")
+}
+
+// 🔥 Dropdown close
 if(!e.target.closest(".menu") && !e.target.closest(".dropdown")){
-
 document.querySelectorAll(".dropdown").forEach(d=>{
 d.style.display="none"
 })
+}
 
+})
+
+document.addEventListener("touchstart", function(e){
+
+let sidebar = document.querySelector(".sidebar")
+let menuBtn = document.querySelector(".menu-btn")
+
+if(!sidebar.contains(e.target) && !menuBtn.contains(e.target)){
+sidebar.classList.remove("active")
+document.getElementById("overlay").classList.remove("active")
+}
+
+if(!e.target.closest(".menu") && !e.target.closest(".dropdown")){
+document.querySelectorAll(".dropdown").forEach(d=>{
+d.style.display="none"
+})
 }
 
 })
