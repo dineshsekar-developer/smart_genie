@@ -70,7 +70,24 @@ cursor:pointer;
 padding:5px;
 }
 
+.dropdown{
+display:none;
+position:absolute;
+background:#2a2a2a;
+border-radius:6px;
+padding:5px;
+margin-top:5px;
+}
 
+.dropdown div{
+padding:8px;
+cursor:pointer;
+border-radius:5px;
+}
+
+.dropdown div:hover{
+background:#444;
+}
 
 /* 🔥 MOBILE FIX */
 @media (max-width:768px){
@@ -93,24 +110,7 @@ transition:0.3s ease;
 .sidebar.active{
 left:0;
 }
-.dropdown{
-display:none;
-position:absolute;
-background:#2a2a2a;
-border-radius:6px;
-padding:5px;
-margin-top:5px;
-}
 
-.dropdown div{
-padding:8px;
-cursor:pointer;
-border-radius:5px;
-}
-
-.dropdown div:hover{
-background:#444;
-}
 .main{
 width:100%;
 }
