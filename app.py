@@ -150,7 +150,7 @@ def rename_chat(chat_id):
 
 def generate_title(user_msg):
     try:
-        clean_msg = user_msg.strip()[:200]
+        clean_msg = user_msg.strip().lower()[:200]
 
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
@@ -158,14 +158,27 @@ def generate_title(user_msg):
                 {
                     "role": "system",
                     "content": (
-    "Generate a clear, professional conversation title (3 to 6 words). "
-    "Focus on the main intent of the user message. "
-    "Do not include punctuation, quotes, or filler words."
+    "Generate a concise, professional chat title.\n"
+"Rules:\n"
+"- Maximum 5 words\n"
+"- Use Title Case (Capitalize Each Word)\n"
+"- No punctuation\n"
+"- No quotes\n"
+"- No extra words like 'How to', 'Help with'\n"
+"- Focus on the core intent only\n"
+"- Make it sound like a clean UI label\n\n"
+"Examples:\n"
+"User: how to fix login error in flask\n"
+"Title: Flask Login Error Fix\n\n"
+"User: generate attendance login page code\n"
+"Title: Attendance Login Page Code\n\n"
+"User: why my github push failed\n"
+"Title: GitHub Push Failure Issue"
 )
                 },
                 {
                     "role": "user",
-                    "content": clean_msg
+                    
                 }
             ]
         )
